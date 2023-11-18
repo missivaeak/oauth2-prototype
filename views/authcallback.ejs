@@ -5,8 +5,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>Token</h1>
-    <p><%= token %></p>
-    <p><a href="/email?token=<%= token %>">email</a></p>
+    <h1>OAuth2 Token</h1>
+    <p><%= oAuthToken %></p>
+    <p><a href="/jwt?token=<%= oAuthToken %>">Trade token for JWT</a></p>
+    <p><a href="/">Start over</a></p>
   </body>
 </html>

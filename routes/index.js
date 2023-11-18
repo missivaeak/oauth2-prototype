@@ -2,46 +2,36 @@ var express = require('express');
 var router = express.Router();
 const { OAuthApp, Octokit } = require('octokit')
 
-const clientId = "ab37ccfd44b552a7f961";
-const clientSecret = "1bb0534a49e6243820daddb3e308a33b93b07c2e";
-const oauth2Client = new OAuthApp({
-  clientId,
-  clientSecret,
-  defaultScopes: ["user:email"]
-});
-
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  const response = oauth2Client.getWebFlowAuthorizationUrl({
-    redirectUrl: "http://localhost:3000/authcallback"
-  })
+  const response = await fetch("http://localhost:1337/customer/authurl");
+  const result = await response.json();
 
-  res.render('index', { authUrl: response.url });
+  res.render('index', { authUrl: result.data.url });
 });
 
 router.get('/authcallback', async function(req, res, next) {
-  const result = await oauth2Client.createToken({
-    code: req.query.code
-  })
+  const code = req.query.code;
+  const state = req.query.state;
+  const response = await fetch(`http://localhost:1337/customer/auth?code=${code}&state=${state}`);
+  const result = await response.json();
 
-  res.render('authcallback', { token: result.authentication.token });
+  res.render('authcallback', { oAuthToken: result.authentication?.token ?? "failed" });
 });
 
-router.get('/email', async function(req, res, next) {
+router.get('/jwt', async function(req, res, next) {
   const token = req.query.token;
-  const octokit = new Octokit({ auth: token });
-  const result = await octokit.request("GET /user/emails");
-  console.log(result)
-  let primaryEmail = "";
-  for (const email of result.data) {
-    if (email.primary) {
-      primaryEmail = email.email;
-    }
+  const response = await fetch(`http://localhost:1337/customer/token?token=${token}`);
+  let result;
+
+  try {
+    result = await response.json()
+    console.log(result)
+  } catch (error) {
+    console.error(error);
   }
 
-  res.render('email', {
-    email: primaryEmail
-  })
+  res.render('jwt', { data: result?.data ?? "failed" });
 });
 
 module.exports = router;
