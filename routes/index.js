@@ -17,7 +17,9 @@ router.get('/authcallback', async function(req, res, next) {
   });
   const result = await response.json();
 
-  res.render('authcallback', { oAuthToken: result.authentication?.token ?? "failed" });
+  console.log(result);
+
+  res.render('authcallback', { oAuthToken: result.data.authentication.token ?? "failed" });
 });
 
 router.get('/jwt', async function(req, res, next) {
@@ -45,7 +47,7 @@ router.get('/jwt', async function(req, res, next) {
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  const response = await fetch("http://localhost:1337/customer/auth");
+  const response = await fetch("http://localhost:1337/customer/auth?redirectUrl=http://localhost:3000/authcallback");
   const result = await response.json();
 
   res.render('index', { authUrl: result.data.url });
