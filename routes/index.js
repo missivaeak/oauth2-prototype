@@ -17,9 +17,7 @@ router.get('/authcallback', async function(req, res, next) {
   });
   const result = await response.json();
 
-  console.log(result);
-
-  res.render('authcallback', { oAuthToken: result.data ?? "failed" });
+  res.render('authcallback', { oAuthToken: result.data.oAuthToken ?? "failed" });
 });
 
 router.get('/jwt', async function(req, res, next) {
@@ -39,6 +37,7 @@ router.get('/jwt', async function(req, res, next) {
   try {
     result = await response.json()
   } catch (error) {
+    console.error(response);
     console.error(error);
   }
 
