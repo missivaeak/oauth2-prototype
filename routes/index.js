@@ -19,7 +19,7 @@ router.get('/authcallback', async function(req, res, next) {
 
   console.log(result);
 
-  res.render('authcallback', { oAuthToken: result.data.authentication.token ?? "failed" });
+  res.render('authcallback', { oAuthToken: result.data ?? "failed" });
 });
 
 router.get('/jwt', async function(req, res, next) {
